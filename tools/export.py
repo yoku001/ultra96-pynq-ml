@@ -1,8 +1,5 @@
-import os
-from json import encoder
-from json import dumps
-
 num_indent = 2
+
 
 class RandomForestParser:
     """
@@ -13,8 +10,7 @@ class RandomForestParser:
     http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
     """
 
-    template_argmax = \
-"""static inline int argmax(int n_values, int values[]) {{
+    template_argmax = """static inline int argmax(int n_values, int values[]) {{
   int y_pred = 0;
   int max_val = values[0];
   for (int i = 1; i < n_values; i++) {{
@@ -26,20 +22,18 @@ class RandomForestParser:
   return y_pred;
 }}"""
 
-    template_tree = \
-"""int {method_name}(float features[]) {{
+    template_tree = """int {method_name}({input_type} features[]) {{
   int values[{n_classes}];
   {tree_body}
 
   return argmax({n_classes}, values);
 }}"""
 
-    template_method = template_argmax + \
-"""
+    template_method = template_argmax + """
 
 {trees}
 
-int predict(float features[]) {{
+int predict({input_type} features[]) {{
   int values[{n_classes}] = {{ 0 }};
 
   {count_trees}
@@ -85,15 +79,16 @@ int predict(float features[]) {{
 
         # Merge parsed results
         return self.template_method.format(trees=trees,
+                                           input_type='float',
                                            count_trees=functions,
                                            n_estimators=self.n_estimators,
                                            n_classes=self.n_classes)
 
     def float_format(self, x):
-      return str(x)
+        return '{:.8g}'.format(x) + "f"
 
     def __get_newline(self, indent):
-      return '\n' + ' ' * indent
+        return '\n' + ' ' * indent
 
     def create_tree_body(self, left_nodes, right_nodes, threshold,
                          value, features, node, indent):
@@ -138,5 +133,6 @@ int predict(float features[]) {{
 
         method_name = self._tree_method_names[estimator_index]
         return self.template_tree.format(method_name=method_name,
+                                         input_type='float',
                                          n_classes=self.n_classes,
                                          tree_body=tree_body)
