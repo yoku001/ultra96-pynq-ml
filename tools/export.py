@@ -118,7 +118,7 @@ int predict({input_type} features[]) {{
                 cl = self.__get_newline(indent)
                 cl += f'values[{i}] = {int(rate)}'
                 classes.append(cl)
-            out += '; '.join(classes) + '; '
+            out += ';'.join(classes) + ';'
         return out
 
     def create_decision_tree(self, estimator_index, estimator):

@@ -13,41 +13,41 @@ static inline int argmax(int n_values, int values[]) {
 int predict_0(float features[]) {
   int values[3];
   
-  if (features[3] <= 0.75) {
-    values[0] = 38; 
-    values[1] = 0; 
-    values[2] = 0; 
+  if (features[3] <= 0.75f) {
+    values[0] = 38;
+    values[1] = 0;
+    values[2] = 0;
   } else {
-    if (features[2] <= 4.8500001430511475) {
-      if (features[3] <= 1.699999988079071) {
-        values[0] = 0; 
-        values[1] = 34; 
-        values[2] = 0; 
+    if (features[2] <= 4.8500001f) {
+      if (features[3] <= 1.7f) {
+        values[0] = 0;
+        values[1] = 34;
+        values[2] = 0;
       } else {
-        if (features[1] <= 3.100000023841858) {
-          values[0] = 0; 
-          values[1] = 0; 
-          values[2] = 1; 
+        if (features[1] <= 3.1f) {
+          values[0] = 0;
+          values[1] = 0;
+          values[2] = 1;
         } else {
-          values[0] = 0; 
-          values[1] = 2; 
-          values[2] = 0; 
+          values[0] = 0;
+          values[1] = 2;
+          values[2] = 0;
         }
       }
     } else {
-      if (features[0] <= 6.599999904632568) {
-        values[0] = 0; 
-        values[1] = 0; 
-        values[2] = 24; 
+      if (features[0] <= 6.5999999f) {
+        values[0] = 0;
+        values[1] = 0;
+        values[2] = 24;
       } else {
-        if (features[2] <= 5.200000047683716) {
-          values[0] = 0; 
-          values[1] = 2; 
-          values[2] = 0; 
+        if (features[2] <= 5.2f) {
+          values[0] = 0;
+          values[1] = 2;
+          values[2] = 0;
         } else {
-          values[0] = 0; 
-          values[1] = 0; 
-          values[2] = 11; 
+          values[0] = 0;
+          values[1] = 0;
+          values[2] = 11;
         }
       }
     }
@@ -59,48 +59,48 @@ int predict_0(float features[]) {
 int predict_1(float features[]) {
   int values[3];
   
-  if (features[3] <= 0.75) {
-    values[0] = 40; 
-    values[1] = 0; 
-    values[2] = 0; 
+  if (features[3] <= 0.75f) {
+    values[0] = 40;
+    values[1] = 0;
+    values[2] = 0;
   } else {
-    if (features[3] <= 1.75) {
-      if (features[2] <= 4.950000047683716) {
-        if (features[2] <= 4.450000047683716) {
-          values[0] = 0; 
-          values[1] = 19; 
-          values[2] = 0; 
+    if (features[3] <= 1.75f) {
+      if (features[2] <= 4.95f) {
+        if (features[2] <= 4.45f) {
+          values[0] = 0;
+          values[1] = 19;
+          values[2] = 0;
         } else {
-          if (features[3] <= 1.6500000357627869) {
-            values[0] = 0; 
-            values[1] = 13; 
-            values[2] = 0; 
+          if (features[3] <= 1.65f) {
+            values[0] = 0;
+            values[1] = 13;
+            values[2] = 0;
           } else {
-            values[0] = 0; 
-            values[1] = 0; 
-            values[2] = 1; 
+            values[0] = 0;
+            values[1] = 0;
+            values[2] = 1;
           }
         }
       } else {
-        if (features[3] <= 1.600000023841858) {
-          values[0] = 0; 
-          values[1] = 0; 
-          values[2] = 4; 
+        if (features[3] <= 1.6f) {
+          values[0] = 0;
+          values[1] = 0;
+          values[2] = 4;
         } else {
-          values[0] = 0; 
-          values[1] = 1; 
-          values[2] = 0; 
+          values[0] = 0;
+          values[1] = 1;
+          values[2] = 0;
         }
       }
     } else {
-      if (features[0] <= 5.950000047683716) {
-        values[0] = 0; 
-        values[1] = 1; 
-        values[2] = 0; 
+      if (features[0] <= 5.95f) {
+        values[0] = 0;
+        values[1] = 1;
+        values[2] = 0;
       } else {
-        values[0] = 0; 
-        values[1] = 0; 
-        values[2] = 33; 
+        values[0] = 0;
+        values[1] = 0;
+        values[2] = 33;
       }
     }
   }
@@ -111,37 +111,37 @@ int predict_1(float features[]) {
 int predict_2(float features[]) {
   int values[3];
   
-  if (features[0] <= 5.450000047683716) {
-    if (features[3] <= 0.800000011920929) {
-      values[0] = 38; 
-      values[1] = 0; 
-      values[2] = 0; 
+  if (features[0] <= 5.45f) {
+    if (features[3] <= 0.80000001f) {
+      values[0] = 38;
+      values[1] = 0;
+      values[2] = 0;
     } else {
-      values[0] = 0; 
-      values[1] = 2; 
-      values[2] = 0; 
+      values[0] = 0;
+      values[1] = 2;
+      values[2] = 0;
     }
   } else {
-    if (features[2] <= 4.950000047683716) {
-      if (features[3] <= 0.6000000014901161) {
-        values[0] = 2; 
-        values[1] = 0; 
-        values[2] = 0; 
+    if (features[2] <= 4.95f) {
+      if (features[3] <= 0.6f) {
+        values[0] = 2;
+        values[1] = 0;
+        values[2] = 0;
       } else {
-        if (features[3] <= 1.699999988079071) {
-          values[0] = 0; 
-          values[1] = 28; 
-          values[2] = 0; 
+        if (features[3] <= 1.7f) {
+          values[0] = 0;
+          values[1] = 28;
+          values[2] = 0;
         } else {
-          values[0] = 0; 
-          values[1] = 0; 
-          values[2] = 2; 
+          values[0] = 0;
+          values[1] = 0;
+          values[2] = 2;
         }
       }
     } else {
-      values[0] = 0; 
-      values[1] = 0; 
-      values[2] = 40; 
+      values[0] = 0;
+      values[1] = 0;
+      values[2] = 40;
     }
   }
 
