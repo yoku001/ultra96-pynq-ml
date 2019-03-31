@@ -3,9 +3,9 @@
 ## Please DO NOT edit it.
 ## Copyright (C) 1986-2019 Xilinx, Inc. All Rights Reserved.
 ############################################################
-open_project hls_pred
+open_project hls_randomforest
 set_top predict
-add_files ./randomforest.c
+add_files ../randomforest.c
 open_solution "solution1"
 set_part {xczu3eg-sbva484-1-i} -tool vivado
 create_clock -period 10 -name default

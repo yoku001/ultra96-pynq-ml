@@ -1,4 +1,8 @@
+# Directories
 .vscode
 __pycache__
+hls_randomforest
 
+# Files
 *.o
+vivado_hls.log
