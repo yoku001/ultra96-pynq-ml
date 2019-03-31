@@ -1,19 +1,33 @@
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-iris = load_iris()
-X, y = iris.data, iris.target
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
-
 from sklearn.ensemble import RandomForestClassifier
-clf = RandomForestClassifier(n_estimators=3, random_state=0)
-clf.fit(X_train, y_train)
-
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from tools.export import RandomForestParser
-parser = RandomForestParser(clf)
-
-with open('randomforest.c', 'w') as f:
-    f.write(parser.export())
-
 import pickle
-with open('randomforest.pkl', 'wb') as f:
-  pickle.dump(clf, f)
+
+
+def main():
+    digits = load_digits()
+    X_train, X_test, y_train, y_test = train_test_split(digits['data'], digits['target'], random_state=0)
+
+    # train classifier
+    print('start training')
+    clf = RandomForestClassifier(n_estimators=10, random_state=0)
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    print(f'validation accuracy: {acc}')
+
+    print('export C source')
+    parser = RandomForestParser(clf)
+    with open('randomforest.c', 'w') as f:
+        f.write(parser.export())
+
+    # save original model for comparison later
+    print('save original model')
+    with open('randomforest.pkl', 'wb') as f:
+        pickle.dump(clf, f)
+
+
+if __name__ == '__main__':
+    main()

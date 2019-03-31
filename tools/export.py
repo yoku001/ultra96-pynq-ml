@@ -64,10 +64,10 @@ void predict(float features[N_FEATURES], int *output) {{
 
         if use_half_precision:
             self.input_type = 'half'
-            self.float_formatter = lambda x: f'(half){x:.8g}f'
+            self.float_formatter = lambda x: f'(half){x:.8f}f'
         else:
             self.input_type = 'float'
-            self.float_formatter = lambda x: f'{x:.8g}f'
+            self.float_formatter = lambda x: f'{x:.8f}f'
 
         self._tree_method_names = [
             f'predict_{i}' for i in range(self.n_estimators)]
