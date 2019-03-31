@@ -11,7 +11,7 @@ class RandomForestParser:
     """
 
     template_tree = """
-int {method_name}({input_type} features[]) {{
+int {method_name}(const {input_type} features[]) {{
   int values[{n_classes}];
   {tree_body}
 
@@ -19,6 +19,8 @@ int {method_name}({input_type} features[]) {{
 }}"""
 
     template_method = """
+#include <string.h>
+
 #ifdef __SYNTHESIS__
   #include <hls_half.h>
 #endif
@@ -43,7 +45,11 @@ void predict(float features[N_FEATURES], int *output) {{
   #pragma HLS INTERFACE ap_ctrl_none port=return
   #pragma HLS INTERFACE m_axi depth={n_features} offset=slave port=features
   #pragma HLS INTERFACE s_axilite port=output
+  #pragma HLS dataflow
 #endif
+
+  float buffer[N_FEATURES];
+  memcpy(buffer, features, sizeof(float) * N_FEATURES);
 
   int values[{n_classes}] = {{ 0 }};
 
@@ -89,7 +95,7 @@ void predict(float features[N_FEATURES], int *output) {{
         functions = []
         for i in range(self.n_estimators):
             fn_name = self._tree_method_names[i]
-            fn_name = f'values[{fn_name}(features)]++;'
+            fn_name = f'values[{fn_name}(buffer)]++;'
             functions.append(fn_name)
         functions = '\n'.join(functions)
 
