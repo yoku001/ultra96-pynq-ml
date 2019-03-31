@@ -3,24 +3,24 @@ num_indent = 2
 
 class RandomForestParser:
     """
-    Convert a instance of sklearn.ensemble.RandomForestClassifier into C sorcecode.
+    Convert a instance of sklearn.ensemble.RandomForestClassifier into C sorce code.
 
     See Also
     --------
     http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
     """
 
-    template_tree = \
-"""int {method_name}({input_type} features[]) {{
+    template_tree = """
+int {method_name}({input_type} features[]) {{
   int values[{n_classes}];
   {tree_body}
 
   return argmax({n_classes}, values);
 }}"""
 
-    template_method = \
-"""#ifdef __SYNTHESIS__
-#include <hls_half.h>
+    template_method = """
+#ifdef __SYNTHESIS__
+  #include <hls_half.h>
 #endif
 
 #define N_FEATURES {n_features}
@@ -36,7 +36,6 @@ static inline int argmax(int n_values, int values[]) {{
   }}
   return y_pred;
 }}
-
 {trees}
 
 void predict({input_type} features[N_FEATURES], int *output) {{
@@ -54,7 +53,7 @@ void predict({input_type} features[N_FEATURES], int *output) {{
 }}
 """
 
-    def __init__(self, estimator):
+    def __init__(self, estimator, use_half_precision=False):
         self.estimator = estimator
 
         self.estimators = [estimator.estimators_[i]
@@ -63,8 +62,18 @@ void predict({input_type} features[N_FEATURES], int *output) {{
         self.n_features = estimator.estimators_[0].n_features_
         self.n_classes = estimator.n_classes_
 
+        if use_half_precision:
+            self.input_type = 'half'
+            self.float_formatter = lambda x: f'(half){x:.8g}f'
+        else:
+            self.input_type = 'float'
+            self.float_formatter = lambda x: f'{x:.8g}f'
+
         self._tree_method_names = [
             f'predict_{i}' for i in range(self.n_estimators)]
+
+    def __newline(self, indent):
+        return '\n' + ' ' * indent
 
     def export(self):
         """
@@ -87,48 +96,42 @@ void predict({input_type} features[N_FEATURES], int *output) {{
         # Parse sub-estimators
         trees = [self.create_decision_tree(i, est)
                  for i, est in enumerate(self.estimators)]
-        trees = '\n\n'.join(trees)
+        trees = '\n'.join(trees)
 
         # Merge parsed results
         return self.template_method.format(n_features=self.n_features,
                                            trees=trees,
-                                           input_type='float',
+                                           input_type=self.input_type,
                                            count_trees=functions,
                                            n_estimators=self.n_estimators,
                                            n_classes=self.n_classes)
-
-    def float_format(self, x):
-        return '{:.8g}'.format(x) + "f"
-
-    def __get_newline(self, indent):
-        return '\n' + ' ' * indent
 
     def create_tree_body(self, left_nodes, right_nodes, threshold,
                          value, features, node, indent):
         out = ''
         if threshold[node] != -2.:
             # Create node of the decision tree
-            out += self.__get_newline(indent)
-            cond = self.float_format(threshold[node])
+            out += self.__newline(indent)
+            cond = self.float_formatter(threshold[node])
             out += f'if (features[{features[node]}] <= {cond}) {{'
             if left_nodes[node] != -1.:
                 # Create a node recursively
                 out += self.create_tree_body(
                     left_nodes, right_nodes, threshold, value,
                     features, left_nodes[node], indent + num_indent)
-            out += self.__get_newline(indent)
+            out += self.__newline(indent)
             out += '} else {'
             if right_nodes[node] != -1.:
                 out += self.create_tree_body(
                     left_nodes, right_nodes, threshold, value,
                     features, right_nodes[node], indent + num_indent)
-            out += self.__get_newline(indent)
+            out += self.__newline(indent)
             out += '}'
         else:
             # Terminal node
             classes = []
             for i, rate in enumerate(value[node][0]):
-                cl = self.__get_newline(indent)
+                cl = self.__newline(indent)
                 cl += f'values[{i}] = {int(rate)}'
                 classes.append(cl)
             out += ';'.join(classes) + ';'
@@ -146,6 +149,6 @@ void predict({input_type} features[N_FEATURES], int *output) {{
 
         method_name = self._tree_method_names[estimator_index]
         return self.template_tree.format(method_name=method_name,
-                                         input_type='float',
+                                         input_type=self.input_type,
                                          n_classes=self.n_classes,
                                          tree_body=tree_body)

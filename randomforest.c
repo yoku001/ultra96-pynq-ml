@@ -1,5 +1,6 @@
+
 #ifdef __SYNTHESIS__
-#include <hls_half.h>
+  #include <hls_half.h>
 #endif
 
 #define N_FEATURES 4
