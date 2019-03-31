@@ -8,10 +8,12 @@ from sklearn.ensemble import RandomForestClassifier
 clf = RandomForestClassifier(n_estimators=3, random_state=0)
 clf.fit(X_train, y_train)
 
-# import pickle
-# pickle.dump(clf, open('logreg_iris.pickle', 'wb'))
 from tools.export import RandomForestParser
 parser = RandomForestParser(clf)
 
 with open('randomforest.c', 'w') as f:
-  f.write(parser.export())
+    f.write(parser.export())
+
+import pickle
+with open('randomforest.pkl', 'wb') as f:
+  pickle.dump(clf, f)
