@@ -7,7 +7,7 @@
 
 #define N_FEATURES 64
 
-static inline int argmax(int n_values, int values[]) {
+static inline int argmax(int n_values, const int values[]) {
   int y_pred = 0;
   int max_val = values[0];
   for (int i = 1; i < n_values; i++) {
@@ -2028,7 +2028,7 @@ int predict_4(const float features[]) {
   return argmax(10, values);
 }
 
-void predict(float features[N_FEATURES], int *output) {
+void predict(float features[N_FEATURES], int& output) {
 #ifdef __SYNTHESIS__
   #pragma HLS INTERFACE ap_ctrl_none port=return
   #pragma HLS INTERFACE m_axi depth=64 offset=slave port=features
@@ -2047,5 +2047,5 @@ values[predict_2(buffer)]++;
 values[predict_3(buffer)]++;
 values[predict_4(buffer)]++;
 
-  *output = argmax(10, values);
+  output = argmax(10, values);
 }

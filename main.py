@@ -18,9 +18,9 @@ def main():
     acc = accuracy_score(y_test, y_pred)
     print(f'validation accuracy: {acc}')
 
-    print('export C source')
+    print('export C++ source')
     parser = RandomForestParser(clf)
-    with open('randomforest.c', 'w') as f:
+    with open('randomforest.cc', 'w') as f:
         f.write(parser.export())
 
     # save original model for comparison later

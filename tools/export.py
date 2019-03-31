@@ -3,7 +3,7 @@ num_indent = 2
 
 class RandomForestParser:
     """
-    Convert a instance of sklearn.ensemble.RandomForestClassifier into C sorce code.
+    Convert a instance of sklearn.ensemble.RandomForestClassifier into C++ sorce code.
 
     See Also
     --------
@@ -27,7 +27,7 @@ int {method_name}(const {input_type} features[]) {{
 
 #define N_FEATURES {n_features}
 
-static inline int argmax(int n_values, int values[]) {{
+static inline int argmax(int n_values, const int values[]) {{
   int y_pred = 0;
   int max_val = values[0];
   for (int i = 1; i < n_values; i++) {{
@@ -40,7 +40,7 @@ static inline int argmax(int n_values, int values[]) {{
 }}
 {trees}
 
-void predict(float features[N_FEATURES], int *output) {{
+void predict(float features[N_FEATURES], int& output) {{
 #ifdef __SYNTHESIS__
   #pragma HLS INTERFACE ap_ctrl_none port=return
   #pragma HLS INTERFACE m_axi depth={n_features} offset=slave port=features
@@ -55,7 +55,7 @@ void predict(float features[N_FEATURES], int *output) {{
 
 {count_trees}
 
-  *output = argmax({n_classes}, values);
+  output = argmax({n_classes}, values);
 }}
 """
 
@@ -83,12 +83,12 @@ void predict(float features[N_FEATURES], int *output) {{
 
     def export(self):
         """
-        Parse the estimator and output C source code.
+        Parse the estimator and output C++ source code.
 
         Returns
         -------
         string
-            The converted C soruce code.
+            The converted C++ soruce code.
         """
 
         # Create function names
