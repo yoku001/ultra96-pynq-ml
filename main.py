@@ -12,7 +12,7 @@ def main():
 
     # train classifier
     print('start training')
-    clf = RandomForestClassifier(n_estimators=10, random_state=0)
+    clf = RandomForestClassifier(n_estimators=5, max_depth=5, random_state=0)
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
