@@ -10,7 +10,22 @@ class RandomForestParser:
     http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
     """
 
-    template_argmax = """static inline int argmax(int n_values, int values[]) {{
+    template_tree = \
+"""int {method_name}({input_type} features[]) {{
+  int values[{n_classes}];
+  {tree_body}
+
+  return argmax({n_classes}, values);
+}}"""
+
+    template_method = \
+"""#ifdef __SYNTHESIS__
+#include <hls_half.h>
+#endif
+
+#define N_FEATURES {n_features}
+
+static inline int argmax(int n_values, int values[]) {{
   int y_pred = 0;
   int max_val = values[0];
   for (int i = 1; i < n_values; i++) {{
@@ -20,25 +35,22 @@ class RandomForestParser:
     }}
   }}
   return y_pred;
-}}"""
-
-    template_tree = """int {method_name}({input_type} features[]) {{
-  int values[{n_classes}];
-  {tree_body}
-
-  return argmax({n_classes}, values);
-}}"""
-
-    template_method = template_argmax + """
+}}
 
 {trees}
 
-int predict({input_type} features[]) {{
+void predict({input_type} features[N_FEATURES], int *output) {{
+#ifdef __SYNTHESIS__
+  #pragma HLS INTERFACE ap_ctrl_none port=return
+  #pragma HLS INTERFACE m_axi depth={n_features} offset=slave port=features
+  #pragma HLS INTERFACE s_axilite port=output
+#endif
+
   int values[{n_classes}] = {{ 0 }};
 
-  {count_trees}
+{count_trees}
 
-  return argmax({n_classes}, values);
+  *output = argmax({n_classes}, values);
 }}
 """
 
@@ -78,7 +90,8 @@ int predict({input_type} features[]) {{
         trees = '\n\n'.join(trees)
 
         # Merge parsed results
-        return self.template_method.format(trees=trees,
+        return self.template_method.format(n_features=self.n_features,
+                                           trees=trees,
                                            input_type='float',
                                            count_trees=functions,
                                            n_estimators=self.n_estimators,

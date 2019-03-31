@@ -1,3 +1,9 @@
+#ifdef __SYNTHESIS__
+#include <hls_half.h>
+#endif
+
+#define N_FEATURES 4
+
 static inline int argmax(int n_values, int values[]) {
   int y_pred = 0;
   int max_val = values[0];
@@ -148,12 +154,18 @@ int predict_2(float features[]) {
   return argmax(3, values);
 }
 
-int predict(float features[]) {
+void predict(float features[N_FEATURES], int *output) {
+#ifdef __SYNTHESIS__
+  #pragma HLS INTERFACE ap_ctrl_none port=return
+  #pragma HLS INTERFACE m_axi depth=4 offset=slave port=features
+  #pragma HLS INTERFACE s_axilite port=output
+#endif
+
   int values[3] = { 0 };
 
-  values[predict_0(features)]++;
+values[predict_0(features)]++;
 values[predict_1(features)]++;
 values[predict_2(features)]++;
 
-  return argmax(3, values);
+  *output = argmax(3, values);
 }
