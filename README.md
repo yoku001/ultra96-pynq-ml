@@ -1,6 +1,6 @@
 # ultra96-pynq-ml
 
-scikit-learnの[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)をCソースコードに変換、高位合成したIPを[Ultra96-PYNQ](https://github.com/Avnet/Ultra96-PYNQ)上で実行するデモ
+scikit-learnで学習した[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)をC++ソースコードに変換、高位合成したIPを[Ultra96-PYNQ](https://github.com/Avnet/Ultra96-PYNQ)上で実行するデモ
 
 ### Quick Start
 1. **Clone the repository on your machine:** 

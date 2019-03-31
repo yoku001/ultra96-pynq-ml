@@ -12,15 +12,15 @@ def main():
 
     # train classifier
     print('start training')
-    clf = RandomForestClassifier(n_estimators=10, random_state=0)
+    clf = RandomForestClassifier(n_estimators=5, max_depth=5, random_state=0)
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     print(f'validation accuracy: {acc}')
 
-    print('export C source')
+    print('export C++ source')
     parser = RandomForestParser(clf)
-    with open('randomforest.c', 'w') as f:
+    with open('randomforest.cc', 'w') as f:
         f.write(parser.export())
 
     # save original model for comparison later
