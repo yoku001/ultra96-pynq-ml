@@ -2,6 +2,11 @@
 
 scikit-learnで学習した[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)をC++ソースコードに変換、高位合成したIPを[Ultra96-PYNQ](https://github.com/Avnet/Ultra96-PYNQ)上で実行するデモ
 
+### Requirements
+* Xilinx Vivado 2018.2
+* [Ultra96 BSP for Xilinx PetaLinux 2018.2](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-ultra96-reva-v2018.2-final.bsp)
+* Python 3.6+
+
 ### Quick Start
 1. **Clone the repository on your machine:** 
 ```bash
@@ -22,17 +27,18 @@ This makefile runs the following:
 Open the Ultra 96 PetaLinux BSP project in Vivado and add the HLS results to IP catalog. You then place the HLS IP in Block Design and connect AXI-interfaces:
 
   * Input
-      * AXI-Master x1: classifier input
-      * AXI-Lite x1: return port
+      * AXI-Lite x1
+      * ap_clk (This example uses _100MHz_)
+      * ap_rst_n
   * Output
-      * AXI-Lite x1: classifier output (class labels)
+      * AXI-Master x1
 
     When finished connecting, you can build the hardware design. After building the hardware design, export the bitstream file(`.bit`) and the tcl script file(`.tcl`).
 
 4. **Execute inference in the Ultra96:**  
 Connect to your Ultra96-PYNQ board and upload following files:
   * generated bitstreams (`.bit` and `.tcl`)
-  * jupyter notebook for test (`notebook/PYNQ-example.ipynb`)
+  * jupyter notebook (`notebook/PYNQ-example.ipynb`)
   * original sklearn classifier (`randomforest.pkl`)
 
 After uploading, run the `PYNQ-example.ipynb` in JupyterNotebook.
