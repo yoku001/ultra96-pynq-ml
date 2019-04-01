@@ -40,7 +40,7 @@ static inline int argmax(int n_values, const int values[]) {{
 }}
 {trees}
 
-void predict(float features[N_FEATURES], int& output) {{
+void predict({input_type} features[N_FEATURES], int& output) {{
 #ifdef __SYNTHESIS__
   #pragma HLS INTERFACE ap_ctrl_none port=return
   #pragma HLS INTERFACE m_axi depth={n_features} offset=slave port=features
@@ -48,7 +48,7 @@ void predict(float features[N_FEATURES], int& output) {{
   #pragma HLS dataflow
 #endif
 
-  float buffer[N_FEATURES];
+  {input_type} buffer[N_FEATURES];
   memcpy(buffer, features, sizeof(float) * N_FEATURES);
 
   int values[{n_classes}] = {{ 0 }};
@@ -70,7 +70,7 @@ void predict(float features[N_FEATURES], int& output) {{
 
         if use_half_precision:
             self.input_type = 'half'
-            self.float_formatter = lambda x: f'(half){x:.8f}f'
+            self.float_formatter = lambda x: f'static_cast<half>({x:.8f}f)'
         else:
             self.input_type = 'float'
             self.float_formatter = lambda x: f'{x:.8f}f'

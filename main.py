@@ -19,7 +19,7 @@ def main():
     print(f'validation accuracy: {acc}')
 
     print('export C++ source')
-    parser = RandomForestParser(clf)
+    parser = RandomForestParser(clf, use_half_precision=False)
     with open('randomforest.cc', 'w') as f:
         f.write(parser.export())
 
