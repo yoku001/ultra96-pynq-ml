@@ -62,24 +62,22 @@ void predict({input_type} features[N_FEATURES], int& output) {{
     def __init__(self, estimator, use_half_precision=False):
         self.estimator = estimator
 
-        self.estimators = [estimator.estimators_[i]
-                           for i in range(estimator.n_estimators)]
+        self.estimators = [estimator.estimators_[i] for i in range(estimator.n_estimators)]
         self.n_estimators = len(self.estimators)
         self.n_features = estimator.estimators_[0].n_features_
         self.n_classes = estimator.n_classes_
 
         if use_half_precision:
-            self.input_type = 'half'
-            self.float_formatter = lambda x: f'static_cast<half>({x:.8f}f)'
+            self.input_type = "half"
+            self.float_formatter = lambda x: f"static_cast<half>({x:.8f}f)"
         else:
-            self.input_type = 'float'
-            self.float_formatter = lambda x: f'{x:.8f}f'
+            self.input_type = "float"
+            self.float_formatter = lambda x: f"{x:.8f}f"
 
-        self._tree_method_names = [
-            f'predict_{i}' for i in range(self.n_estimators)]
+        self._tree_method_names = [f"predict_{i}" for i in range(self.n_estimators)]
 
     def __newline(self, indent):
-        return '\n' + ' ' * indent
+        return "\n" + " " * indent
 
     def export(self):
         """
@@ -95,52 +93,64 @@ void predict({input_type} features[N_FEATURES], int& output) {{
         functions = []
         for i in range(self.n_estimators):
             fn_name = self._tree_method_names[i]
-            fn_name = f'values[{fn_name}(buffer)]++;'
+            fn_name = f"values[{fn_name}(buffer)]++;"
             functions.append(fn_name)
-        functions = '\n'.join(functions)
+        functions = "\n".join(functions)
 
         # Parse sub-estimators
-        trees = [self.create_decision_tree(i, est)
-                 for i, est in enumerate(self.estimators)]
-        trees = '\n'.join(trees)
+        trees = [self.create_decision_tree(i, est) for i, est in enumerate(self.estimators)]
+        trees = "\n".join(trees)
 
         # Merge parsed results
-        return self.template_method.format(n_features=self.n_features,
-                                           trees=trees,
-                                           input_type=self.input_type,
-                                           count_trees=functions,
-                                           n_estimators=self.n_estimators,
-                                           n_classes=self.n_classes)
+        return self.template_method.format(
+            n_features=self.n_features,
+            trees=trees,
+            input_type=self.input_type,
+            count_trees=functions,
+            n_estimators=self.n_estimators,
+            n_classes=self.n_classes,
+        )
 
-    def create_tree_body(self, left_nodes, right_nodes, threshold,
-                         value, features, node, indent):
-        out = ''
-        if threshold[node] != -2.:
+    def create_tree_body(self, left_nodes, right_nodes, threshold, value, features, node, indent):
+        out = ""
+        if threshold[node] != -2.0:
             # Create node of the decision tree
             out += self.__newline(indent)
             cond = self.float_formatter(threshold[node])
-            out += f'if (features[{features[node]}] <= {cond}) {{'
-            if left_nodes[node] != -1.:
+            out += f"if (features[{features[node]}] <= {cond}) {{"
+            if left_nodes[node] != -1.0:
                 # Create a node recursively
                 out += self.create_tree_body(
-                    left_nodes, right_nodes, threshold, value,
-                    features, left_nodes[node], indent + num_indent)
+                    left_nodes,
+                    right_nodes,
+                    threshold,
+                    value,
+                    features,
+                    left_nodes[node],
+                    indent + num_indent,
+                )
             out += self.__newline(indent)
-            out += '} else {'
-            if right_nodes[node] != -1.:
+            out += "} else {"
+            if right_nodes[node] != -1.0:
                 out += self.create_tree_body(
-                    left_nodes, right_nodes, threshold, value,
-                    features, right_nodes[node], indent + num_indent)
+                    left_nodes,
+                    right_nodes,
+                    threshold,
+                    value,
+                    features,
+                    right_nodes[node],
+                    indent + num_indent,
+                )
             out += self.__newline(indent)
-            out += '}'
+            out += "}"
         else:
             # Terminal node
             classes = []
             for i, rate in enumerate(value[node][0]):
                 cl = self.__newline(indent)
-                cl += f'values[{i}] = {int(rate)}'
+                cl += f"values[{i}] = {int(rate)}"
                 classes.append(cl)
-            out += ';'.join(classes) + ';'
+            out += ";".join(classes) + ";"
         return out
 
     def create_decision_tree(self, estimator_index, estimator):
@@ -150,11 +160,19 @@ void predict({input_type} features[N_FEATURES], int& output) {{
         indices = [str(e) for e in estimator.tree_.feature]
 
         tree_body = self.create_tree_body(
-            estimator.tree_.children_left, estimator.tree_.children_right,
-            estimator.tree_.threshold, estimator.tree_.value, indices, 0, num_indent)
+            estimator.tree_.children_left,
+            estimator.tree_.children_right,
+            estimator.tree_.threshold,
+            estimator.tree_.value,
+            indices,
+            0,
+            num_indent,
+        )
 
         method_name = self._tree_method_names[estimator_index]
-        return self.template_tree.format(method_name=method_name,
-                                         input_type=self.input_type,
-                                         n_classes=self.n_classes,
-                                         tree_body=tree_body)
+        return self.template_tree.format(
+            method_name=method_name,
+            input_type=self.input_type,
+            n_classes=self.n_classes,
+            tree_body=tree_body,
+        )
