@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O2 -Wall
+CXXFLAGS = -O2 -Wall -shared -fPIC
 PYTHON = python
 
 .PHONY: hw
@@ -10,8 +10,12 @@ hw:
 .PHONY: sw
 sw:
 	$(PYTHON) main.py
-	$(CXX) -c randomforest.cc
+	$(CXX) $(CXXFLAGS) randomforest.cc -o randomforest.so
 
 .PHONY: clean
 clean:
 	rm *.o *.log *.pkl
+
+.PHONY: test
+test: sw
+	$(PYTHON) test.py

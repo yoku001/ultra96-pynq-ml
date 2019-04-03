@@ -40,7 +40,7 @@ static inline int argmax(int n_values, const int values[]) {{
 }}
 {trees}
 
-void predict({input_type} features[N_FEATURES], int& output) {{
+extern "C" void predict({input_type} features[N_FEATURES], int& output) {{
 #ifdef __SYNTHESIS__
   #pragma HLS INTERFACE ap_ctrl_none port=return
   #pragma HLS INTERFACE m_axi depth={n_features} offset=slave port=features
