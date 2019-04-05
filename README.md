@@ -3,7 +3,9 @@
 
 scikit-learnで学習した[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)をC++ソースコードに変換、高位合成したIPを[Ultra96-PYNQ](https://github.com/Avnet/Ultra96-PYNQ)上で実行するデモ
 
-### Requirements
+[Notebook for Demo](https://github.com/yoku001/ultra96-pynq-ml/blob/master/pynq/PYNQ-example.ipynb)
+
+## Requirements
 * Target Device
     * Ultra96-PYNQ v2.4.0
 * Host PC
@@ -11,16 +13,16 @@ scikit-learnで学習した[RandomForestClassifier](https://scikit-learn.org/sta
     * [Ultra96 BSP for Xilinx PetaLinux 2018.2](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-ultra96-reva-v2018.2-final.bsp)
     * Python 3.6+
 
-### Quick Start
+## Quick Start
 1. **Clone the repository on your machine:** 
 ```bash
-% git clone https://github.com/yoku001/ultra96-pynq-ml.git
-% cd ultra96-pynq-ml
+git clone https://github.com/yoku001/ultra96-pynq-ml.git
+cd ultra96-pynq-ml
 ```
 
 2. **Train classifier and perform HLS:**
 ```bash
-% make
+make
 ```
 This makefile runs the following:
 * `main.py` - Train the RandomForestClassifier and output the C source code for inference. By default, the iris dataset is used.
